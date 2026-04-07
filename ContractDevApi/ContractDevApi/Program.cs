@@ -11,12 +11,17 @@ using Microsoft.OpenApi;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString=builder.Configuration.GetConnectionString("DefaultConnection");
+//*Moïse using environment variable for increased security while deploying,no longer stored as plain text in appsettings.json
+var dbPassword=Environment.GetEnvironmentVariable("DB_Password");
 
+
+//*Moïse replace placeholder in connection string with password from environment variable stored in dbPassowrd  
+connectionString=connectionString.Replace("_DB_PASSWORD",dbPassword!);
 //Database Connection. NOTE: Ensure user_secrets is properly configured to prevent leaking passwords(this is for connecting back end)
 builder.Services.AddDbContext<ContractDevContext>(options => 
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
            .UseSnakeCaseNamingConvention());
-
 // CORS for Angular
 builder.Services.AddCors(options =>
 {
