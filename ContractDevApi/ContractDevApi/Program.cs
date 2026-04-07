@@ -73,15 +73,16 @@ builder.Services.AddOpenApi();
 // JWT AUTHENTICATION CONFIGURATION
 // -------------------------------------------------------------
 var jwtSettings = builder.Configuration.GetSection("Jwt");
+
+
+// Disable default claim type mapping to use standard JWT claim names (sub, email, etc.)
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 //*Moïse jwt key is fetched from an environment variable for increased security during deployment, no longer stored as plaintext in appsettings.json
 var jwtKey=Environment.GetEnvironmentVariable("JWT_KEY") ?? jwtSettings["Key"]!;
 
 //error check in case jwt key environment variable is not set or there is an issue
 if(string.IsNullOrEmpty(jwtKey))
     throw new Exception("JWT_KEY environment variable is not set");
-
-// Disable default claim type mapping to use standard JWT claim names (sub, email, etc.)
-JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddAuthentication(options =>
 {
