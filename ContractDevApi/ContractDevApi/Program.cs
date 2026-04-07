@@ -15,7 +15,9 @@ var connectionString=builder.Configuration.GetConnectionString("DefaultConnectio
 //*Moïse using environment variable for increased security while deploying,no longer stored as plain text in appsettings.json
 var dbPassword=Environment.GetEnvironmentVariable("DB_Password");
 
-
+//*Moïse error check in case there is an issue with environmet variables
+if(string.IsNullOrEmpty(dbPassword))
+    throw new Exception("DB_PASSWORD environment variable is not set");
 //*Moïse replace placeholder in connection string with password from environment variable stored in dbPassowrd  
 connectionString=connectionString.Replace("_DB_PASSWORD",dbPassword!);
 /*//Database Connection. NOTE: Ensure user_secrets is properly configured to prevent leaking passwords(this is for connecting back end)
