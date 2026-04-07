@@ -38,14 +38,31 @@ builder.Services.AddCors(options =>
             .WithOrigins(
                 "http://localhost:4200",  // Angular dev server
                 "https://localhost:4200",
-                "http://localhost:5000",  // API (DEVELOPMENT ONLY)
-                "https://localhost:5001"
+                /* *Moïse"http://localhost:5000",  // API (DEVELOPMENT ONLY)
+                "https://localhost:5001",*/
+                "https://d5tgf2sjo9ckk.cloudfront.net" //*Moïse frontend cloudfront url
+            )
+            .AllowAnyHeader()  // Includes Authorization header for JWT
+            .AllowAnyMethod());
+});
+/*
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy => policy
+            .WithOrigins(
+                "http://localhost:4200",  // Angular dev server
+                "https://localhost:4200",
+                /// *Moïse"http://localhost:5000",  // API (DEVELOPMENT ONLY)
+                //"https://localhost:5001",
+                ///
+                "https://d5tgf2sjo9ckk.cloudfront.net" //*Moïsefrontend cloudfront url
             )
             .AllowAnyHeader()  // Includes Authorization header for JWT
             .AllowAnyMethod()
             .AllowCredentials());
 });
-
+*/
 // Add services to the container.
 builder.Services.AddControllers();
 
