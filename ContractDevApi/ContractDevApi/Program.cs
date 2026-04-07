@@ -18,10 +18,16 @@ var dbPassword=Environment.GetEnvironmentVariable("DB_Password");
 
 //*Moïse replace placeholder in connection string with password from environment variable stored in dbPassowrd  
 connectionString=connectionString.Replace("_DB_PASSWORD",dbPassword!);
-//Database Connection. NOTE: Ensure user_secrets is properly configured to prevent leaking passwords(this is for connecting back end)
+/*//Database Connection. NOTE: Ensure user_secrets is properly configured to prevent leaking passwords(this is for connecting back end)
 builder.Services.AddDbContext<ContractDevContext>(options => 
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .UseSnakeCaseNamingConvention());*/
+
+//*Moïse database conection is now using environment variable so password is not stored as plain text enhancing security
+builder.Services.AddDbContext<ContractDevContext>(options => 
+    options.UseNpgsql(connectionString)
            .UseSnakeCaseNamingConvention());
+
 // CORS for Angular
 builder.Services.AddCors(options =>
 {
