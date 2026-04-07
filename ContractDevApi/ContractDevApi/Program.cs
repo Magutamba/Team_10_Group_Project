@@ -54,6 +54,8 @@ builder.Services.AddOpenApi();
 // JWT AUTHENTICATION CONFIGURATION
 // -------------------------------------------------------------
 var jwtSettings = builder.Configuration.GetSection("Jwt");
+//*Moïse jwt key is fetched from an environment variable for increased security during deployment, no longer stored as plaintext in appsettings.json
+var jwtKey=Environment.GetEnvironmentVariable("JWT_KEY") ?? jwtSettings["Key"]!;
 
 // Disable default claim type mapping to use standard JWT claim names (sub, email, etc.)
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -79,7 +81,8 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtSettings["Key"]!))
+             Encoding.UTF8.GetBytes(jwtSettings["key"]!))
+            
     };
 });
 
