@@ -13,7 +13,7 @@ using Npgsql;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString=builder.Configuration.GetConnectionString("DefaultConnection");
 //*Moïse using environment variable for increased security while deploying,no longer stored as plain text in appsettings.json
-var dbPassword=Environment.GetEnvironmentVariable("DB_Password");
+var dbPassword=Environment.GetEnvironmentVariable("DB_PASSWORD");
 
 //*Moïse error check in case there is an issue with environmet variables
 if(string.IsNullOrEmpty(dbPassword))
@@ -40,7 +40,7 @@ builder.Services.AddCors(options =>
                 "https://localhost:4200",
                 /* *Moïse"http://localhost:5000",  // API (DEVELOPMENT ONLY)
                 "https://localhost:5001",*/
-                "https://d5tgf2sjo9ckk.cloudfront.net" //*Moïse frontend cloudfront url
+                "https://d5tgf2sjo9ckk.cloudfront.net" //*Moïse frontend behind CloudFront url
             )
             .AllowAnyHeader()  // Includes Authorization header for JWT
             .AllowAnyMethod());
