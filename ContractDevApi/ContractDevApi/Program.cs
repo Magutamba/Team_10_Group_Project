@@ -81,8 +81,9 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-             Encoding.UTF8.GetBytes(jwtSettings["key"]!))
-            
+             //Encoding.UTF8.GetBytes(jwtSettings["key"]!))
+            //*Moïse jwt key is fetched from environment variable for increased security, not stored as plain text in appsettings.json
+            Encoding.UTF8.GetBytes(jwtKey!))
     };
 });
 
