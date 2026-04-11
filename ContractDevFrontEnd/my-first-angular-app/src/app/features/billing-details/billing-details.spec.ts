@@ -1,5 +1,19 @@
 // NOT USED FOR FUTURE USE //
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { render } from '@testing-library/angular';
+import { BillingDetails } from './billing-details';
+
+describe('AboutText', () => {
+  it('should create', async () => {
+    const { fixture } = await render(BillingDetails);
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+});
+
+
+
+
+
+/*import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BillingDetails } from './billing-details';
 
 describe('BillingDetails', () => {
@@ -20,4 +34,4 @@ describe('BillingDetails', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-});
+});*/

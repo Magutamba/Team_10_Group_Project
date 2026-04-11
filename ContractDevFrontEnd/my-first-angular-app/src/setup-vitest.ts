@@ -1,3 +1,6 @@
+// Angular 17+ test environment activation
+import '@angular/core/testing';
+
 import { vi } from 'vitest';
 
 // --- DOM shims for Bootstrap JS ---
@@ -15,8 +18,6 @@ vi.mock('bootstrap/dist/js/bootstrap.bundle.min.js', () => ({
   default: {}
 }));
 
-// Optional: if you import plain "bootstrap"
 vi.mock('bootstrap', () => ({
   default: {}
 }));
-
