@@ -1,4 +1,3 @@
-// setup-vitest.ts
 import { vi } from 'vitest';
 
 // --- DOM shims for Bootstrap JS ---
@@ -20,3 +19,4 @@ vi.mock('bootstrap/dist/js/bootstrap.bundle.min.js', () => ({
 vi.mock('bootstrap', () => ({
   default: {}
 }));
+
