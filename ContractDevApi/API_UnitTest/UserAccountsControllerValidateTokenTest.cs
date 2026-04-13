@@ -23,10 +23,8 @@ public class UserProfilesControllerValidateTokenTest
         var options = new DbContextOptionsBuilder<ContractDevContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase" + Guid.NewGuid())
             .Options;
-
         //apply inmemory database to context for model sync connection
         _context = new ContractDevContext(options);
-
         //JWT setup
         var configValues = new Dictionary<string, string?>
         {
@@ -35,12 +33,10 @@ public class UserProfilesControllerValidateTokenTest
             ["Jwt:Audience"] = "http://localhost:4200",
             ["Jwt:ExpiresInMinutes"] = "60"
         };
-
         //Build testing app
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(configValues)
             .Build();
-
         //Build JWT object
         var jwtService = new JwtService(configuration);
         //Assign dependency to build controller object
@@ -58,10 +54,8 @@ public class UserProfilesControllerValidateTokenTest
             SecurityQuestion = "test question",
             SecurityAnswer = "applesauce"
         };
-
         //register test user
         await _userController.RegisterUserAccount(newUser);
-
     }
 
     [TearDown]
@@ -143,8 +137,9 @@ public class UserProfilesControllerValidateTokenTest
         response = await _userController.ValidateToken();
 
         //Assert
-        var badRequestResult = response as UnauthorizedObjectResult;
-        Assert.That(badRequestResult, Is.Not.Null, "Expected UnauthorizedObjectResult for invalid token");
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        var unathorizedResult = response as UnauthorizedObjectResult;
+        Assert.That(unathorizedResult, Is.Not.Null, "Expected UnauthorizedObjectResult for invalid token");
+        Assert.That(unathorizedResult!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
     }
+    
 }

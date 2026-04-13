@@ -25,10 +25,8 @@ public class UserProfilesControllerUploadTest
         var options = new DbContextOptionsBuilder<ContractDevContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase" + Guid.NewGuid())
             .Options;
-
         //apply inmemory database to context for model sync connection
         _context = new ContractDevContext(options);
-
         //JWT setup
         var configValues = new Dictionary<string, string?>
         {
@@ -37,18 +35,15 @@ public class UserProfilesControllerUploadTest
             ["Jwt:Audience"] = "http://localhost:4200",
             ["Jwt:ExpiresInMinutes"] = "60"
         };
-
         //Build testing app
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(configValues)
             .Build();
-
         //Build JWT object
         var jwtService = new JwtService(configuration);
         //Assing dependency to build controller objects
         _userController = new UserAccountsController(_context, jwtService);
         _profileController = new UserProfilesController(_context, jwtService);
-
         UserRegistrationDto newUser = new UserRegistrationDto(){
             Username = "Test User",
             FirstName = "Test",
@@ -61,10 +56,8 @@ public class UserProfilesControllerUploadTest
             SecurityQuestion = "test question",
             SecurityAnswer = "applesauce"
         };
-
         //Register new user
         await _userController.RegisterUserAccount(newUser);
-
         UserLoginDto loginDto = new UserLoginDto
         {
             Email = "test@gmail.com",
@@ -78,10 +71,8 @@ public class UserProfilesControllerUploadTest
         var tokenProperty = okLoginResult!.Value?.GetType().GetProperty("token");
         string token = tokenProperty?.GetValue(okLoginResult.Value)?.ToString() ?? string.Empty;
         Assert.That(token, Is.Not.Empty, "Expected token in login response");
-
         var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
         var principal = new ClaimsPrincipal(new ClaimsIdentity(jwt.Claims, "TestAuth"));
-        
         //Add user's token to profile controller's httpcontext to simulate sending token as bearer via http request
         _profileController.ControllerContext = new ControllerContext
         {

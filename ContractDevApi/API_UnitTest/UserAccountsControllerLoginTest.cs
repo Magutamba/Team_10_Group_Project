@@ -168,7 +168,7 @@ public class UserProfilesControllerLoginTest
 
     //--------
     //NOTE FOR REPORT:
-    //Because C# model binding exists, we cannot pass non UserLoginDto objects to the Login method,
+    //Because of C# model binding and not utilizing the complete ASP pipeline, we cannot pass non UserLoginDto objects to the Login method,
     //We can neither assign non string values to email or password or null values for the same reason
     //Simply put the code will not compile due to errors raised
     //In-order to test sending non string values or non UserLoginDto object to the login endpoint we must use an HTTP Request via Integration Testing
