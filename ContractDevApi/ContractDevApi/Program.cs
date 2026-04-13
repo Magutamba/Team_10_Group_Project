@@ -11,10 +11,23 @@ using Microsoft.OpenApi;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString=builder.Configuration.GetConnectionString("DefaultConnection");
+//*Moïse using environment variable for increased security while deploying,no longer stored as plain text in appsettings.json
+var dbPassword=Environment.GetEnvironmentVariable("DB_PASSWORD");
 
-//Database Connection. NOTE: Ensure user_secrets is properly configured to prevent leaking passwords(this is for connecting back end)
+//*Moïse error check in case there is an issue with environmet variables
+if(string.IsNullOrEmpty(dbPassword))
+    throw new Exception("DB_PASSWORD environment variable is not set");
+//*Moïse replace placeholder in connection string with password from environment variable stored in dbPassowrd  
+connectionString=connectionString.Replace("_DB_PASSWORD",dbPassword!);
+/*//Database Connection. NOTE: Ensure user_secrets is properly configured to prevent leaking passwords(this is for connecting back end)
 builder.Services.AddDbContext<ContractDevContext>(options => 
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .UseSnakeCaseNamingConvention());*/
+
+//*Moïse database conection is now using environment variable so password is not stored as plain text enhancing security
+builder.Services.AddDbContext<ContractDevContext>(options => 
+    options.UseNpgsql(connectionString)
            .UseSnakeCaseNamingConvention());
 
 // CORS for Angular
@@ -25,14 +38,31 @@ builder.Services.AddCors(options =>
             .WithOrigins(
                 "http://localhost:4200",  // Angular dev server
                 "https://localhost:4200",
-                "http://localhost:5000",  // API (DEVELOPMENT ONLY)
-                "https://localhost:5001"
+                /* *Moïse"http://localhost:5000",  // API (DEVELOPMENT ONLY)
+                "https://localhost:5001",*/
+                "https://d5tgf2sjo9ckk.cloudfront.net" //*Moïse frontend behind CloudFront url
+            )
+            .AllowAnyHeader()  // Includes Authorization header for JWT
+            .AllowAnyMethod());
+});
+/*
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy => policy
+            .WithOrigins(
+                "http://localhost:4200",  // Angular dev server
+                "https://localhost:4200",
+                /// *Moïse"http://localhost:5000",  // API (DEVELOPMENT ONLY)
+                //"https://localhost:5001",
+                ///
+                "https://d5tgf2sjo9ckk.cloudfront.net" //*Moïsefrontend cloudfront url
             )
             .AllowAnyHeader()  // Includes Authorization header for JWT
             .AllowAnyMethod()
             .AllowCredentials());
 });
-
+*/
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -44,8 +74,15 @@ builder.Services.AddOpenApi();
 // -------------------------------------------------------------
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 
+
 // Disable default claim type mapping to use standard JWT claim names (sub, email, etc.)
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+//*Moïse jwt key is fetched from an environment variable for increased security during deployment, no longer stored as plaintext in appsettings.json
+var jwtKey=Environment.GetEnvironmentVariable("JWT_KEY") ?? jwtSettings["Key"]!;
+
+//error check in case jwt key environment variable is not set or there is an issue
+if(string.IsNullOrEmpty(jwtKey))
+    throw new Exception("JWT_KEY environment variable is not set");
 
 builder.Services.AddAuthentication(options =>
 {
@@ -68,7 +105,9 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtSettings["Key"]!))
+             //Encoding.UTF8.GetBytes(jwtSettings["key"]!))
+            //*Moïse jwt key is fetched from environment variable for increased security, not stored as plain text in appsettings.json
+            Encoding.UTF8.GetBytes(jwtKey!))
     };
 });
 
