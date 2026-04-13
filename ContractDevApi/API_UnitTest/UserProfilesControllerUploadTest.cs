@@ -212,4 +212,112 @@ public class UserProfilesControllerUploadTest
         var forbiddenResult = response as ForbidResult;
         Assert.That(forbiddenResult, Is.Not.Null, "Expected ForbidResult for mismatched User ID");
     }
+
+    [Test]
+    [Order(int.MaxValue-2)]
+    public async Task UploadUserProfileNotFound()
+    {
+        //Arrange
+        var user = await _context.UserAccounts.FirstOrDefaultAsync(x => x.UserSignupEmail == "test@gmail.com");
+        var profile = await _context.UserProfiles.FirstOrDefaultAsync( x => x.UserAccountId == user!.UserAccountId);
+        _context.UserProfiles.Remove(profile!);
+        await _context.SaveChangesAsync();
+        
+        //Building in-memory png file 
+        byte[] pngData = [1,2,3,4,5,6,7,8,9,0];
+        await using var stream = new MemoryStream(pngData);
+        IFormFile file = new FormFile(stream, 0, pngData.Length, "File", "pfp.png")
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = "image/png"
+        };
+
+        //User will always be 1 as they are the only user in the in memory database
+        ProfileUploadDto uploadDto = new ProfileUploadDto
+        {
+            Id = 1,
+            File = file  
+        };
+
+        //Act
+        IActionResult response = await _profileController.UploadFile(uploadDto);
+
+        //Assert
+        var notFoundResult = response as NotFoundObjectResult;
+        Assert.That(notFoundResult, Is.Not.Null, "Expected Not Found Result for No User Account in Database");
+        Assert.That(notFoundResult.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
+    }
+
+    [Test]
+    [Order(int.MaxValue-1)]
+    public async Task UploadUserAccountNotFound()
+    {
+        //Arrange
+        var user = await _context.UserAccounts.FirstOrDefaultAsync(x => x.UserSignupEmail == "test@gmail.com");
+        _context.UserAccounts.Remove(user!);
+        await _context.SaveChangesAsync();
+
+        //Building in-memory png file 
+        byte[] pngData = [1,2,3,4,5,6,7,8,9,0];
+        await using var stream = new MemoryStream(pngData);
+        IFormFile file = new FormFile(stream, 0, pngData.Length, "File", "pfp.png")
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = "image/png"
+        };
+
+        //User will always be 1 as they are the only user in the in memory database
+        ProfileUploadDto uploadDto = new ProfileUploadDto
+        {
+            Id = 1,
+            File = file  
+        };
+
+        //Act
+        IActionResult response = await _profileController.UploadFile(uploadDto);
+
+        //Assert
+        var notFoundResult = response as NotFoundObjectResult;
+        Assert.That(notFoundResult, Is.Not.Null, "Expected Not Found Result for No User Account in Database");
+        Assert.That(notFoundResult.StatusCode, Is.EqualTo(StatusCodes.Status404NotFound));
+    }
+
+    [Test]
+    [Order(int.MaxValue)]
+    public async Task UploadUnauthenticatedAccount()
+    {
+        //Arrange
+        //Remove logged in user from HTTP Context to simulate an unauthenticated user
+        _profileController.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity())
+            }
+        };
+
+        //Building in-memory png file 
+        byte[] pngData = [1,2,3,4,5,6,7,8,9,0];
+        await using var stream = new MemoryStream(pngData);
+        IFormFile file = new FormFile(stream, 0, pngData.Length, "File", "pfp.png")
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = "image/png"
+        };
+
+        //User will always be 1 as they are the only user in the in memory database
+        ProfileUploadDto uploadDto = new ProfileUploadDto
+        {
+            Id = 1,
+            File = file  
+        };
+
+        //Act
+        IActionResult response = await _profileController.UploadFile(uploadDto);
+
+        //Assert
+        var unauthorzedResult = response as UnauthorizedObjectResult;
+        Assert.That(unauthorzedResult, Is.Not.Null, "Expected Unauthorized Result for Unauthorized Request");
+        Assert.That(unauthorzedResult.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
+    }
 }

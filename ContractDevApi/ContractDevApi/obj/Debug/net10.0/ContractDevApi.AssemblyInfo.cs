@@ -14,11 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ContractDevApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-<<<<<<< HEAD
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+492f6ccfa8c23d8c3c702e6f6d68e7b8f4395ed2")]
-=======
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3de64cb254c6e5d6d92c9ff4fc7422334c3317fc")]
->>>>>>> origin/JTW_008
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e031521941ada084c4fdd972dd6602d2ad679da7")]
 [assembly: System.Reflection.AssemblyProductAttribute("ContractDevApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ContractDevApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
