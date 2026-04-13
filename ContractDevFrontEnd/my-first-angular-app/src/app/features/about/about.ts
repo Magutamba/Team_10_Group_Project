@@ -17,6 +17,7 @@ import { GdprModal } from '../../core/shared/components/gdpr-modal/gdpr-modal';
 export class About{
   // Reference to the section we want to scroll to
   @ViewChild('aboutSection') aboutSection!: ElementRef;
+  
 
   // Signals for UI state
   showVideo = signal(false);
@@ -40,10 +41,11 @@ export class About{
 
     //scroll only when opening, not closing
     if(!this.showAboutText()) return;
+    
 
     // Wait for Angular to render the DOM before scrolling
     setTimeout(() => {
-      this.aboutSection.nativeElement.scrollIntoView({
+      this.aboutSection?.nativeElement?.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });
