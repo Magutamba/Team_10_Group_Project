@@ -173,7 +173,7 @@ public class UserProfilesControllerDeleteTest
         Assert.That(unauthorizedResult, Is.Not.Null, "DeleteUser should return 401 Unauthorized when the security answer does not match the stored value.");
         Assert.That(unauthorizedResult!.StatusCode ?? StatusCodes.Status401Unauthorized, Is.EqualTo(StatusCodes.Status401Unauthorized));
 
-        //verify the database is actually empty now
+        //verify the database
         var userInDb = await _context.UserAccounts.FindAsync(validId);
         Assert.That(userInDb, Is.Not.Null, "The user should not have been removed from the database.");
     }
@@ -256,7 +256,7 @@ public class UserProfilesControllerDeleteTest
         Assert.That(unauthorizedResult, Is.Not.Null, "DeleteUser should return 401 Unauthorized when no token or an invalid token is provided.");
         Assert.That(unauthorizedResult!.StatusCode ?? StatusCodes.Status401Unauthorized, Is.EqualTo(StatusCodes.Status401Unauthorized));
 
-        //verify the database is actually empty now
+        //verify the database
         var userInDb = await _context.UserAccounts.FindAsync(validId);
         Assert.That(userInDb, Is.Not.Null, "The user should not have been removed from the database.");
     }
