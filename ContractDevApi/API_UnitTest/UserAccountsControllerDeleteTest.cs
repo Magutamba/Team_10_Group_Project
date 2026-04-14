@@ -338,4 +338,55 @@ public class UserProfilesControllerDeleteTest
 
     }
 
+    [Test]
+    public async Task deleteAccount_UserAccountNotFound_ReturnsNotFound()
+    {
+        // Fetch the user from the DB using the email to get the auto-generated ID
+        var createdUser = await _context.UserAccounts.FirstOrDefaultAsync(u => u.UserSignupEmail == "test@gmail.com");
+        
+        if(createdUser == null)
+        {
+            return;
+        }
+
+        int validId = createdUser!.UserAccountId;
+        string validPassword = "applesauce";
+        string validSecurityAnswer = "applesauce";
+
+
+        //remove only the user's profile to simulate missing profile "Profile Not Found"
+        var profile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserAccountId == validId);
+
+        //check if profile is not null
+        if (profile != null)
+        {
+            //remove the profile
+            _context.UserProfiles.Remove(profile);
+            //update and save temp db
+            await _context.SaveChangesAsync();
+        }
+
+       
+        //create an instance of UserDeletionDto
+        UserDeletionDto userDelete = new UserDeletionDto()
+        {
+            Id = validId,
+            Password = validPassword,
+            SecurityAnswer = validSecurityAnswer
+        };
+
+        //act
+        IActionResult response = await _userController.DeleteUser(userDelete);
+
+        //assert
+        var notFoundResult = response as NotFoundObjectResult;
+        Assert.That(notFoundResult, Is.Not.Null, "Should return NotFound when the profile is missing.");
+        Assert.That(notFoundResult!.StatusCode ?? StatusCodes.Status404NotFound, Is.EqualTo(StatusCodes.Status404NotFound));
+
+        //verify the UserAccount still exists (deletion shouldn't have gone through) 
+        var userInDb = await _context.UserAccounts.FindAsync(validId);
+        Assert.That(userInDb, Is.Not.Null, "The user should not have been removed from the database.");
+    }
+    
+
 }
