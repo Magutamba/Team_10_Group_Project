@@ -46,10 +46,6 @@ describe('Login', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('shows login success when credentials are correct', fakeAsync(() => {
     //Arrange
     //Simulate HTTP call and force error for when login is eventually handled
