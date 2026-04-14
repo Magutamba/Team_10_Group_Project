@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ContractDevApi.Migrations
 {
     [DbContext(typeof(ContractDevContext))]
-    [Migration("20260313132043_Init")]
-    partial class Init
+    [Migration("20260414111916_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.2")
+                .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "title", new[] { "developer", "client", "both" });
@@ -226,28 +226,53 @@ namespace ContractDevApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ContractDevApi.Models.UserReview", b =>
+            modelBuilder.Entity("ContractDevApi.Models.UserRating", b =>
                 {
-                    b.Property<int>("UserAccountId")
+                    b.Property<int>("RatingId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("user_account_id");
+                        .HasColumnName("rating_id");
 
-                    b.Property<float>("AverageReviewScore")
-                        .HasColumnType("real")
-                        .HasColumnName("average_review_score");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RatingId"));
 
-                    b.Property<int>("NumberOfReviews")
+                    b.Property<int>("CollaborationScore")
                         .HasColumnType("integer")
-                        .HasColumnName("number_of_reviews");
+                        .HasColumnName("collaboration_score");
 
-                    b.Property<float>("TotalReviewPoints")
-                        .HasColumnType("real")
-                        .HasColumnName("total_review_points");
+                    b.Property<int>("CommunicationScore")
+                        .HasColumnType("integer")
+                        .HasColumnName("communication_score");
 
-                    b.HasKey("UserAccountId")
-                        .HasName("pk_user_reviews");
+                    b.Property<int>("PaymentReliabilityScore")
+                        .HasColumnType("integer")
+                        .HasColumnName("payment_reliability_score");
 
-                    b.ToTable("user_reviews", (string)null);
+                    b.Property<int>("RecommendationScore")
+                        .HasColumnType("integer")
+                        .HasColumnName("recommendation_score");
+
+                    b.Property<int>("RevieweeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("reviewee_id");
+
+                    b.Property<int>("ReviewerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("reviewer_id");
+
+                    b.Property<int>("TimeManagementScore")
+                        .HasColumnType("integer")
+                        .HasColumnName("time_management_score");
+
+                    b.HasKey("RatingId")
+                        .HasName("pk_user_individual_ratings");
+
+                    b.HasIndex("RevieweeId")
+                        .HasDatabaseName("ix_user_individual_ratings_reviewee_id");
+
+                    b.HasIndex("ReviewerId")
+                        .HasDatabaseName("ix_user_individual_ratings_reviewer_id");
+
+                    b.ToTable("user_individual_ratings", (string)null);
                 });
 
             modelBuilder.Entity("ContractDevApi.Models.UserSkill", b =>
@@ -293,16 +318,25 @@ namespace ContractDevApi.Migrations
                     b.Navigation("UserAccount");
                 });
 
-            modelBuilder.Entity("ContractDevApi.Models.UserReview", b =>
+            modelBuilder.Entity("ContractDevApi.Models.UserRating", b =>
                 {
-                    b.HasOne("ContractDevApi.Models.UserAccount", "UserAccount")
+                    b.HasOne("ContractDevApi.Models.UserAccount", "RevieweeAccount")
                         .WithMany()
-                        .HasForeignKey("UserAccountId")
+                        .HasForeignKey("RevieweeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_reviews_user_accounts_user_account_id");
+                        .HasConstraintName("fk_user_individual_ratings_user_accounts_reviewee_id");
 
-                    b.Navigation("UserAccount");
+                    b.HasOne("ContractDevApi.Models.UserAccount", "ReviewerAccount")
+                        .WithMany()
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_individual_ratings_user_accounts_reviewer_id");
+
+                    b.Navigation("RevieweeAccount");
+
+                    b.Navigation("ReviewerAccount");
                 });
 
             modelBuilder.Entity("ContractDevApi.Models.UserSkill", b =>

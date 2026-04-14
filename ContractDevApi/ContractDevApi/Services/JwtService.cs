@@ -48,15 +48,25 @@ namespace ContractDevApi.Services
             //
             //    We read the secret key from appsettings.json: "Jwt:Key".
             //    It must be a sufficiently long, random string in production.
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["Jwt:Key"]!)
-            );
+            // var key = new SymmetricSecurityKey(
+            //     Encoding.UTF8.GetBytes(_config["Jwt:Key"]!)
+            // );
 
-            // 3. Create signing credentials.
-            //    This tells JWT which algorithm to use to sign the token.
-            //    Here we use HMAC-SHA256, a common and secure choice.
+            // // 3. Create signing credentials.
+            // //    This tells JWT which algorithm to use to sign the token.
+            // //    Here we use HMAC-SHA256, a common and secure choice.
+            // var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            //*Moïse | old direct fallback kept for traceability
+            // var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? _config["Jwt:Key"];
+            //*Moïse | jwt key is fetched from environment variable in EC2 during deployment for security
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? _config["Jwt:Key"];
+            if (string.IsNullOrWhiteSpace(jwtKey))
+            {
+                throw new InvalidOperationException("JWT signing key not configured.");
+            }
+            //*Moïse
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
             // 4. Build the actual JWT token object.
             //    We pass:
             //      - issuer: who created the token (from appsettings: Jwt:Issuer)

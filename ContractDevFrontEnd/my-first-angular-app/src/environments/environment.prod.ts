@@ -1,5 +1,4 @@
 export const environment = {
-  production:true,
-  //*Moïse deployment set to relative path api because Cloudfront handles routing from frontend to backend
-  apiUrl: '/api',
+  production: true,
+  apiUrl: '',//*Moïse | deployment set to relative path api because Cloudfront distributionhandles routing from frontend to backend
 };

@@ -1,31 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\walco\\Desktop\\ContractDev\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj": {}
+    "/Users/moise/Documents/Computing/Year 2/Team_10_Group_Project-main/ContractDevApi/ContractDevApi/ContractDevApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\walco\\Desktop\\ContractDev\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj": {
+    "/Users/moise/Documents/Computing/Year 2/Team_10_Group_Project-main/ContractDevApi/ContractDevApi/ContractDevApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\walco\\Desktop\\ContractDev\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj",
+        "projectUniqueName": "/Users/moise/Documents/Computing/Year 2/Team_10_Group_Project-main/ContractDevApi/ContractDevApi/ContractDevApi.csproj",
         "projectName": "ContractDevApi",
-        "projectPath": "C:\\Users\\walco\\Desktop\\ContractDev\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj",
-        "packagesPath": "C:\\Users\\walco\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\walco\\Desktop\\ContractDev\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\obj\\",
+        "projectPath": "/Users/moise/Documents/Computing/Year 2/Team_10_Group_Project-main/ContractDevApi/ContractDevApi/ContractDevApi.csproj",
+        "packagesPath": "/Users/moise/.nuget/packages/",
+        "outputPath": "/Users/moise/Documents/Computing/Year 2/Team_10_Group_Project-main/ContractDevApi/ContractDevApi/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\walco\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/moise/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -122,7 +116,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

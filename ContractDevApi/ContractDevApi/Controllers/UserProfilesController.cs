@@ -28,6 +28,22 @@ namespace ContractDevApi.Controllers
             _context = context;
             _jwt = jwt;
         }
+        //*Moïse | CloudFront safe api rout for profile image retrieval
+        private static string BuildProfileImageApiPath(string? storedPath)
+        {
+            if(string.IsNullOrWhiteSpace(storedPath))
+            {
+                return string.Empty;
+            }
+
+            var fileName = Path.GetFileName(storedPath);
+            if(string.IsNullOrWhiteSpace(fileName))
+            {
+                return string.Empty;
+            }
+
+            return $"/api/UserProfiles/Image/{fileName}";
+        }
 
         //-----------------------
         //Update Profle - Requires that logged in user is authenticated, Checks JWT and Cookie auth
@@ -178,7 +194,9 @@ namespace ContractDevApi.Controllers
                 OfferingWork = profile.OfferingWork,
                 DisplayUserName = profile.UsernameDisplay,
                 HidePhoneNumber = profile.HidePhoneNumber,
-                ProfileImagePath = profile.ProfilePictureFilepath,
+                //ProfileImagePath = profile.ProfilePictureFilepath,
+                //*Moïse | return api route instead of direct /image so CloudFront routes to backend on EC2 properly
+                ProfileImagePath = BuildProfileImageApiPath(profile.ProfilePictureFilepath),
                 Socials = new Dictionary<string, string?> {
                         { "facebook", social.FacebookLink },
                         { "Social Email", social.UserSocialEmailLink },
@@ -275,7 +293,9 @@ namespace ContractDevApi.Controllers
                     OfferingWork = p?.OfferingWork,
                     DisplayUserName = p?.UsernameDisplay,
                     HidePhoneNumber = p?.HidePhoneNumber,
-                    ProfileImagePath = p?.ProfilePictureFilepath ?? string.Empty,
+                    //ProfileImagePath = p?.ProfilePictureFilepath ?? string.Empty,
+                    //*Moïse | return api route instead of direct /image so CloudFront routes to backend on EC2 properly
+                    ProfileImagePath = BuildProfileImageApiPath(p?.ProfilePictureFilepath) ?? string.Empty,
                     Socials = new Dictionary<string, string?> {
                             { "facebook", s?.FacebookLink },
                             { "Social Email", s?.UserSocialEmailLink },
@@ -361,6 +381,8 @@ namespace ContractDevApi.Controllers
 
             //relative path for file "/images/filename.jpg"
             var dbRelativePath = $"/images/{fileName}";
+            //*Moïse | api path so images load through /api CloudFront behavior
+            var apiRelativePath = BuildProfileImageApiPath(dbRelativePath);
 
             //Use FileStream to save file to image directory
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -393,9 +415,39 @@ namespace ContractDevApi.Controllers
             }
 
 
-            return Ok(new {path = dbRelativePath});
+            //return Ok(new {path = dbRelativePath});
+            //*Moïse | return api route for frontend rendering
+            return Ok(new {path = apiRelativePath ?? dbRelativePath});
         }
+        
+        //Moïse | image endpoint under /api for CloudFront api behavior compatibility
+        //can allow anonymous access as user is already authenticated, token user id is checked
+        //[Authorize]
+        [AllowAnonymous]
+        [HttpGet("Image/{fileName}")]
+        public IActionResult GetProfileImage([FromRoute] string fileName)
+        {
+            var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            var safeFileName = Path.GetFileName(fileName);
+            //*Moïse | combine images path with to get full path to file on server
+            var fullPath = Path.Combine(imagesPath, safeFileName);
 
+            if(!System.IO.File.Exists(fullPath))
+            {
+                return NotFound("Image not found");
+            }
+            var extension = Path.GetExtension(safeFileName).ToLowerInvariant();
+            var contentType = extension switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".webp" => "image/webp",
+                _ => "application/octet-stream"
+            };
+
+            return PhysicalFile(fullPath, contentType);
+        }
         //-----------------------
         //Helper method to retrieve JWT token claim and check if user ID matches JWT sub (user ID)
         //Returns null if claim could not be found or if invalid
