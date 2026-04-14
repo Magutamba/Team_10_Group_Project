@@ -131,10 +131,10 @@ public class UserRatingsControllerDeleteRatingTest
     [Test]
     public async Task deleteRating_InvalidToken_ReturnsUnauthorized()
     {   //arrange
-        //remove the valid token 
-        _userController.ControllerContext = new ControllerContext
+        // You must wipe the context of the controller we actually testing
+        _userRatingsController.ControllerContext = new ControllerContext
         {
-          HttpContext = new DefaultHttpContext() //no tokent
+            HttpContext = new DefaultHttpContext() // No User, No Claims, No Token
         };
 
         UserRatingDeleteDto userRatingDeleteDto = new UserRatingDeleteDto
@@ -142,12 +142,14 @@ public class UserRatingsControllerDeleteRatingTest
             RevieweeId = 1,
             ReviewerId = 2
         };
+
         //act
         var result = await _userRatingsController.DeleteRating(userRatingDeleteDto);
+
         //assert
         var unauthorizedResult = result as UnauthorizedObjectResult;
-        //Assert.That(unauthorizedResult, Is.Not.Null, "DeleteUser should return 401 Unauthorized when no token or an invalid token is provided.");
-        Assert.That(unauthorizedResult!.StatusCode ?? StatusCodes.Status401Unauthorized, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(unauthorizedResult, Is.Not.Null, "Expected UnauthorizedObjectResult");
+        Assert.That(unauthorizedResult!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
     }
 
     [Test]
@@ -215,6 +217,7 @@ public class UserRatingsControllerDeleteRatingTest
         var result = await _userRatingsController.DeleteRating(dto);
         //assert
         Assert.That(result, Is.InstanceOf<OkObjectResult>());
+        //check db
         Assert.That(_context.UserRatings.Count(), Is.EqualTo(0)); 
     }
 }
