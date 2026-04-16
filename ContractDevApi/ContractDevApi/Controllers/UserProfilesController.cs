@@ -369,21 +369,8 @@ namespace ContractDevApi.Controllers
             }
 
             //Update existing filepath and extension if such exists, else create new one
-            var updateFile = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserAccountId == dto.Id);
-            if (updateFile != null)
-            {
-                updateFile.ProfilePictureFilepath = dbRelativePath;
-                updateFile.ProfilePictureExtension = extension;
-            }else
-            {
-                var newFile = new UserFile
-                {
-                    FilePath = dbRelativePath,
-                    Extension = extension,
-                    UserAccountId = dto.Id,
-                    UserAccount = user
-                };
-            }
+            profile.ProfilePictureFilepath = dbRelativePath;
+            profile.ProfilePictureExtension = extension;
             
             //Try to update database -- if unsuccessful return error
             try {

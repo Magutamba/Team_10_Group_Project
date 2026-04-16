@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using ContractDevApi.DTOs;
 using ContractDevApi.Models;
 using ContractDevApi.Services;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol.Core.Types;
 
 namespace ContractDevApi.Controllers
 {
@@ -49,6 +51,11 @@ namespace ContractDevApi.Controllers
 
             if (usernameExists) return Conflict("user with that email or username already exists");
 
+            string passwordError = ValidatePassword(dto.Password);
+            if (string.IsNullOrEmpty(passwordError))
+            {
+                return BadRequest(new { Message = passwordError });
+            }
             //BCrypt hashing used to hash user password that will be saved on the database
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             string hashedSecurityAnswer = BCrypt.Net.BCrypt.HashPassword(dto.SecurityAnswer.ToLower());
@@ -200,7 +207,7 @@ namespace ContractDevApi.Controllers
 
             //Check if password matches hashed password via BCrypt verification
             bool validatePassword = BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.HashedPassword);
-
+            
             //If password does not pass verification, return error Status 401
             if (!validatePassword) return Unauthorized(new { Message = "Invalid Password" });
 
@@ -209,6 +216,12 @@ namespace ContractDevApi.Controllers
 
             if (!validateSecurityAnswer) return Unauthorized(new { Message = "Invalid Security Answer" });
             
+            string passwordError = ValidatePassword(dto.NewPassword);
+            if (string.IsNullOrEmpty(passwordError))
+            {
+                return BadRequest(new { Message = passwordError });
+            }
+
             //Hash new password
             var newHashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
             //Overrite old hashed password with new password
@@ -343,7 +356,7 @@ namespace ContractDevApi.Controllers
         }
 
         [HttpPost("RecoverAccount")]
-        public async Task<IActionResult> RecoveryAccount([FromForm] UserRecoveryDto dto)
+        public async Task<IActionResult> RecoverAccount([FromForm] UserRecoveryDto dto)
         {
             //Checks UserRecoveryDto Model to ensure that all incoming values match the Model constraints
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
@@ -358,6 +371,12 @@ namespace ContractDevApi.Controllers
 
             bool validSecAnswer = BCrypt.Net.BCrypt.Verify(dto.SecurityAnswer, userByEmail.SecurityAnswer);
             if (!validSecAnswer) return Unauthorized("Security Question or Security Answer does not match");
+
+            string passwordError = ValidatePassword(dto.NewPassword);
+            if (string.IsNullOrEmpty(passwordError))
+            {
+                return BadRequest(new { Message = passwordError });
+            }
 
             //Valid user data - registering new password
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
@@ -375,5 +394,32 @@ namespace ContractDevApi.Controllers
             return Ok("New password registered successfully.");
         }
 
+        private string ValidatePassword(string password)
+        {
+            if (password.Length < 8)
+            {
+                return "Password must be at least 8 characters long.";
+            }
+
+            //No whitespaces
+            if (Regex.IsMatch(password, @"\s"))
+            {
+                return "Password cannot contain whitespace";
+            }
+
+            //Minimum 1 digit
+            if (!Regex.IsMatch(password, @"\d"))
+            {
+                return "Password must contain at least one number.";
+            }
+
+            //Minimum 1 special character (non-alphanumeric/whitespace/underscore)
+            if (!Regex.IsMatch(password, @"[^\w\s]"))
+            {
+                return "Password must contain at least one special character.";
+            }
+
+            return string.Empty;
+        }
     }
 }
