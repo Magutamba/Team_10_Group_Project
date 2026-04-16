@@ -399,9 +399,9 @@ namespace ContractDevApi.Controllers
         //-----------------------
         private string ValidatePassword(string password)
         {
-            if (password.Length < 8)
+            if (password.Length < 8 || password.Length > 100)
             {
-                return "Password must be at least 8 characters long.";
+                return "Password must be at least 8 characters and less than 100 characters long.";
             }
 
             //No whitespaces
