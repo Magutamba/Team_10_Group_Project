@@ -89,7 +89,7 @@ public class UserProfilesControllerLoginTest
         //Assert
         var okResult = response as OkObjectResult;
         Assert.That(okResult, Is.Not.Null, "Expected OkObjectResult for valid login");
-        Assert.That(okResult!.StatusCode ?? StatusCodes.Status200OK, Is.EqualTo(StatusCodes.Status200OK));
+        Assert.That(okResult!.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
 
         //Verify that token is present in the response
         var tokenProperty = okResult!.Value?.GetType().GetProperty("token");
@@ -116,7 +116,7 @@ public class UserProfilesControllerLoginTest
         //Assert
         var unathorizedResult = response as UnauthorizedObjectResult;
         Assert.That(unathorizedResult, Is.Not.Null, "Excepted Unauthorized for invalid login");
-        Assert.That(unathorizedResult!.StatusCode ?? StatusCodes.Status401Unauthorized, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(unathorizedResult!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
     }
 
     [Test]
@@ -138,7 +138,7 @@ public class UserProfilesControllerLoginTest
         //Assert
         var unathorizedResult = response as UnauthorizedObjectResult;
         Assert.That(unathorizedResult, Is.Not.Null, "Excepted Unauthorized for invalid login");
-        Assert.That(unathorizedResult!.StatusCode ?? StatusCodes.Status401Unauthorized, Is.EqualTo(StatusCodes.Status401Unauthorized));
+        Assert.That(unathorizedResult!.StatusCode, Is.EqualTo(StatusCodes.Status401Unauthorized));
     }
 
     [Test]
@@ -161,14 +161,42 @@ public class UserProfilesControllerLoginTest
 
         var problemDetails = badRequestResult.Value as ValidationProblemDetails;
         Assert.That(problemDetails, Is.Not.Null, "Expected ValidationProblemDetails payload");
-        Assert.That(problemDetails!.Status ?? StatusCodes.Status400BadRequest, Is.EqualTo(StatusCodes.Status400BadRequest));
         Assert.That(problemDetails!.Errors.ContainsKey("Email"), Is.True);
         Assert.That(problemDetails.Errors.ContainsKey("Password"), Is.True);
     }
 
+    
+    //Test must run last as it deletes user's profile from database context to test profile not found behavior
+    [Test]
+    [Order(int.MaxValue)]
+    public async Task LoginNoProfileFound()
+    {
+        //Arrange
+        //In order to remove the user's profile, I must first capture the record and store it as an object to later call the entity framework remove method
+        var profile = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserAccountId == 1);
+        _context.UserProfiles.Remove(profile!);
+        await _context.SaveChangesAsync();
+
+        string validEmail = "test@gmail.com";
+        string validPassword = "applesauce";
+        
+        UserLoginDto loginDto = new UserLoginDto()
+        {
+          Email = validEmail,
+          Password = validPassword  
+        };
+
+        //Act
+        IActionResult response = await _userController.Login(loginDto);
+
+        //Assert
+        var ProblemResult = response as ObjectResult;
+        Assert.That(ProblemResult, Is.Not.Null, "Expected Not Found Object Result for Profile not existing in database");
+    }
+
     //--------
     //NOTE FOR REPORT:
-    //Because C# model binding exists, we cannot pass non UserLoginDto objects to the Login method,
+    //Because of C# model binding and not utilizing the complete ASP pipeline, we cannot pass non UserLoginDto objects to the Login method,
     //We can neither assign non string values to email or password or null values for the same reason
     //Simply put the code will not compile due to errors raised
     //In-order to test sending non string values or non UserLoginDto object to the login endpoint we must use an HTTP Request via Integration Testing

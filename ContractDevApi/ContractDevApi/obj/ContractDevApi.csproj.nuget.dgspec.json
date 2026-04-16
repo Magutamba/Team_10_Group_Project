@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\walco\\Desktop\\ContractDev\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj": {}
+    "C:\\Users\\moare\\Documents\\GitHub\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\walco\\Desktop\\ContractDev\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj": {
+    "C:\\Users\\moare\\Documents\\GitHub\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\walco\\Desktop\\ContractDev\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj",
+        "projectUniqueName": "C:\\Users\\moare\\Documents\\GitHub\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj",
         "projectName": "ContractDevApi",
-        "projectPath": "C:\\Users\\walco\\Desktop\\ContractDev\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj",
-        "packagesPath": "C:\\Users\\walco\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\walco\\Desktop\\ContractDev\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\obj\\",
+        "projectPath": "C:\\Users\\moare\\Documents\\GitHub\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\ContractDevApi.csproj",
+        "packagesPath": "C:\\Users\\moare\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\moare\\Documents\\GitHub\\Team_10_Group_Project\\ContractDevApi\\ContractDevApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\walco\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\moare\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net10.0": {
@@ -122,7 +122,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
