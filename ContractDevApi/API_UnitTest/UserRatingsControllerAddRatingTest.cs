@@ -1,3 +1,9 @@
+/*
+ * @author Jeán Walton
+ * 14/04/2026
+ * UserRatingsControllerAddRatingTest.cs
+ */
+
 using ContractDevApi.Controllers;
 using ContractDevApi.DTOs;
 using ContractDevApi.Models;

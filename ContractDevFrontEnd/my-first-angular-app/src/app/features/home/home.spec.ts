@@ -18,6 +18,7 @@ describe('Home', () => {
 
   //beforeEach runs before every single test block as it's a  asynchronous process.
   beforeEach(async () => {
+    
     //TestBed is creates a fake Angular module enviroment for the test.
     await TestBed.configureTestingModule({
       //imports componts 
