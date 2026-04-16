@@ -52,7 +52,7 @@ namespace ContractDevApi.Controllers
             if (usernameExists) return Conflict("user with that email or username already exists");
 
             string passwordError = ValidatePassword(dto.Password);
-            if (string.IsNullOrEmpty(passwordError))
+            if (!string.IsNullOrEmpty(passwordError))
             {
                 return BadRequest(new { Message = passwordError });
             }
@@ -151,7 +151,7 @@ namespace ContractDevApi.Controllers
             // Check if user profile exists
             if (userProfile == null)
             {
-                return Problem("User profile not found");
+                return NotFound("User profile not found");
             }
 
             userProfile.LastLogin = DateTimeOffset.UtcNow;
@@ -217,7 +217,7 @@ namespace ContractDevApi.Controllers
             if (!validateSecurityAnswer) return Unauthorized(new { Message = "Invalid Security Answer" });
             
             string passwordError = ValidatePassword(dto.NewPassword);
-            if (string.IsNullOrEmpty(passwordError))
+            if (!string.IsNullOrEmpty(passwordError))
             {
                 return BadRequest(new { Message = passwordError });
             }
@@ -356,7 +356,7 @@ namespace ContractDevApi.Controllers
         }
 
         [HttpPost("RecoverAccount")]
-        public async Task<IActionResult> RecoverAccount([FromForm] UserRecoveryDto dto)
+        public async Task<IActionResult> RecoveryAccount([FromForm] UserRecoveryDto dto)
         {
             //Checks UserRecoveryDto Model to ensure that all incoming values match the Model constraints
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
@@ -373,7 +373,7 @@ namespace ContractDevApi.Controllers
             if (!validSecAnswer) return Unauthorized("Security Question or Security Answer does not match");
 
             string passwordError = ValidatePassword(dto.NewPassword);
-            if (string.IsNullOrEmpty(passwordError))
+            if (!string.IsNullOrEmpty(passwordError))
             {
                 return BadRequest(new { Message = passwordError });
             }
@@ -394,6 +394,9 @@ namespace ContractDevApi.Controllers
             return Ok("New password registered successfully.");
         }
 
+        //-----------------------
+        // Helper method - Password rule validator: builds error message for returned error
+        //-----------------------
         private string ValidatePassword(string password)
         {
             if (password.Length < 8)
